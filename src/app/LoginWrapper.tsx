@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { signIn, useSession } from 'next-auth/react';
-import CharacterModel from './CharacterModel';
 
-const HomePage = () => {
+const LoginWrapper = ({ children }: React.PropsWithChildren) => {
     const { data: session } = useSession();
+
+    console.log(session);
 
     if (!session) {
         return <button onClick={() => signIn()}>Login</button>;
@@ -13,9 +14,9 @@ const HomePage = () => {
 
     return (
         <div>
-            <CharacterModel />
+            {children}
         </div>
     )
 }
 
-export default HomePage;
+export default LoginWrapper;

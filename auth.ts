@@ -4,15 +4,20 @@ import BattleNet, { BattleNetIssuer } from 'next-auth/providers/battlenet';
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [BattleNet({ authorization: { params: { state: process.env.AUTH_SECRET } }, issuer: process.env.AUTH_BATTLENET_ISSUER as BattleNetIssuer })],
     callbacks: {
-        jwt({ token, user }) {
-            if (user) { // User is available during sign-in
-                token.id = user.id;
+        jwt({ token, account }) {
+            if (account?.provider === 'battlenet') {
+                return { ...token, accessToken: account.access_token }
             }
+
             return token;
         },
-        session({ session, token }) {
-            session.user.id = token.id as string;
+        async session({ session, token }) {
+            session.accessToken = token.accessToken as string;
+
             return session;
-        },
+        }
+    },
+    session: {
+        strategy: 'jwt',
     },
 });
